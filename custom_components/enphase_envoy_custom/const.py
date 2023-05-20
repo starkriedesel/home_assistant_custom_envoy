@@ -80,6 +80,33 @@ SENSORS = (
         device_class=SensorDeviceClass.ENERGY,
     ),
     SensorEntityDescription(
+        key="net_consumption",
+        name="Current Net Power Consumption",
+        native_unit_of_measurement=POWER_WATT,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    SensorEntityDescription(
+        key="daily_net_consumption",
+        name="Today's Net Energy Consumption",
+        native_unit_of_measurement=ENERGY_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.ENERGY,
+    ),
+    SensorEntityDescription(
+        key="seven_days_net_consumption",
+        name="Last Seven Days Net Energy Consumption",
+        native_unit_of_measurement=ENERGY_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.ENERGY,
+    ),
+    SensorEntityDescription(
+        key="lifetime_net_consumption",
+        name="Lifetime Net Energy Consumption",
+        native_unit_of_measurement=ENERGY_WATT_HOUR,
+        state_class=SensorStateClass.TOTAL_INCREASING,
+        device_class=SensorDeviceClass.ENERGY,
+    ),
+    SensorEntityDescription(
         key="inverters",
         name="Inverter",
         native_unit_of_measurement=POWER_WATT,

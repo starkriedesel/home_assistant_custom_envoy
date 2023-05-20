@@ -78,6 +78,10 @@ class EnvoyReader:  # pylint: disable=too-many-instance-attributes
         "Consumption data not available for your Envoy device."
     )
 
+    message_net_consumption_not_available = (
+        "Net consumption data not available for your Envoy device."
+    )
+
     message_grid_status_not_available = (
         "Grid status not available for your Envoy device."
     )
@@ -552,6 +556,31 @@ class EnvoyReader:  # pylint: disable=too-many-instance-attributes
         consumption = raw_json["consumption"][0]["wNow"]
         return int(consumption)
 
+    def supports_net_consumption(self):
+        """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
+        """so that this method will only read data from stored variables"""
+
+        raw_json = self.endpoint_production_json_results.json()
+        if "consumption" not in raw_json:
+            return False
+        consumption = raw_json["consumption"]
+        if not isinstance(consumption, list) or len(consumption) < 2:
+            return False
+        net_consumption = consumption[1]
+        return isinstance(net_consumption, dict) and \
+            str(net_consumption.get("measurementType", None)).lower() == "net-consumption"
+
+    async def net_consumption(self):
+        """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
+        """so that this method will only read data from stored variables"""
+
+        if not self.supports_net_consumption():
+            return self.message_net_consumption_not_available
+
+        raw_json = self.endpoint_production_json_results.json()
+        consumption = raw_json["consumption"][1]["wNow"]
+        return int(consumption)
+
     async def daily_production(self):
         """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
         """so that this method will only read data from stored variables"""
@@ -594,6 +623,17 @@ class EnvoyReader:  # pylint: disable=too-many-instance-attributes
 
         raw_json = self.endpoint_production_json_results.json()
         daily_consumption = raw_json["consumption"][0]["whToday"]
+        return int(daily_consumption)
+
+    async def daily_net_consumption(self):
+        """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
+        """so that this method will only read data from stored variables"""
+
+        if not self.supports_net_consumption():
+            return self.message_consumption_not_available
+
+        raw_json = self.endpoint_production_json_results.json()
+        daily_consumption = raw_json["consumption"][1]["whToday"]
         return int(daily_consumption)
 
     async def seven_days_production(self):
@@ -640,6 +680,17 @@ class EnvoyReader:  # pylint: disable=too-many-instance-attributes
         seven_days_consumption = raw_json["consumption"][0]["whLastSevenDays"]
         return int(seven_days_consumption)
 
+    async def seven_days_net_consumption(self):
+        """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
+        """so that this method will only read data from stored variables"""
+
+        if not self.supports_net_consumption():
+            return self.message_consumption_not_available
+
+        raw_json = self.endpoint_production_json_results.json()
+        seven_days_consumption = raw_json["consumption"][1]["whLastSevenDays"]
+        return int(seven_days_consumption)
+
     async def lifetime_production(self):
         """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
         """so that this method will only read data from stored variables"""
@@ -682,6 +733,17 @@ class EnvoyReader:  # pylint: disable=too-many-instance-attributes
 
         raw_json = self.endpoint_production_json_results.json()
         lifetime_consumption = raw_json["consumption"][0]["whLifetime"]
+        return int(lifetime_consumption)
+
+    async def lifetime_net_consumption(self):
+        """Running getData() beforehand will set self.enpoint_type and self.isDataRetrieved"""
+        """so that this method will only read data from stored variables"""
+
+        if not self.supports_net_consumption():
+            return self.message_consumption_not_available
+
+        raw_json = self.endpoint_production_json_results.json()
+        lifetime_consumption = raw_json["consumption"][1]["whLifetime"]
         return int(lifetime_consumption)
 
     async def inverters_production(self):
